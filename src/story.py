@@ -1,5 +1,3 @@
-# src/story.py
-
 class StoryNode:
     def __init__(self, text, sound=None, position="center", choices=None, ending=False):
         self.text = text
@@ -9,22 +7,28 @@ class StoryNode:
         self.ending = ending
 
 
-def chain_lines(lines):
+def chain_lines(lines, ending=False):
     """
     lines = [(texto, sonido, posicion), ...]
-    Retorna el primer y último nodo encadenados automáticamente
+    Devuelve (first, last) encadenando con 'Continuar'.
+    Si ending=True, el último nodo se marca final y NO agrega 'Continuar'.
     """
     first = current = StoryNode(*lines[0])
     for line in lines[1:]:
         nxt = StoryNode(*line)
         current.choices = {"Continuar": nxt}
         current = nxt
+
+    if ending:
+        current.ending = True
+        current.choices = {}  # nada de 'Continuar' si es final
+
     return first, current
 
 
 class Story:
     def __init__(self):
-        # --- INTRO (4 líneas) ---
+        # --- INTRO ---
         intro_lines = [
             ("Despiertas frente a un laberinto colosal, cubierto de enredaderas y musgo.", "wind.wav", "left"),
             ("El aire es helado y una bruma espesa cubre la entrada.", "fog.wav", "front"),
@@ -75,14 +79,14 @@ class Story:
             "Adentrarte en la oscuridad profunda": oscuridad
         }
 
-        # --- SUBRAMA A1: LUZ ---
+        # --- SUBRAMA A1: LUZ (no final; deriva a uno de los dos finales) ---
         esconderse_lines = [
             ("Te ocultas tras una columna cubierta de líquenes.", "hide.wav", "left"),
             ("Tus dedos tropiezan con un papel húmedo.", "paper.wav", "front"),
             ("Al abrirlo, ves tu nombre escrito con tinta roja.", "note.wav", "right"),
             ("El mensaje dice: 'Él sabe la verdad'.", "whisper4.wav", "back")
         ]
-        esconderse, _ = chain_lines(esconderse_lines)
+        esconderse, end_esconderse = chain_lines(esconderse_lines, ending=False)
 
         enfrentar_lines = [
             ("Te giras con valentía, y una sombra femenina se materializa.", "shadow.wav", "front"),
@@ -90,45 +94,51 @@ class Story:
             ("Una voz grave te llama: 'Hijo… no debiste volver'.", "voice.wav", "back"),
             ("El aire se enfría como si hubieras invocado a un espectro.", "cold.wav", "center")
         ]
-        enfrentar, _ = chain_lines(enfrentar_lines)
+        enfrentar, end_enfrentar = chain_lines(enfrentar_lines, ending=False)
 
         final_luz.choices = {
             "Esconderte": esconderse,
             "Enfrentar la presencia": enfrentar
         }
 
-        # --- SUBRAMA A2: OSCURIDAD ---
+        # --- SUBRAMA A2: OSCURIDAD → convergen al FINAL 'TÚ' ---
         negar_lines = [
             ("Avanzas tambaleante y encuentras un espejo roto apoyado contra la pared.", "mirror.wav", "front"),
-            ("Tu reflejo sonríe con manchas de sangre en el rostro.", "laugh.wav", "center"),
-            ("Entiendes la verdad: ¡eras tú el asesino!", "shock.wav", "back")
+            ("Tu reflejo sonríe con manchas de sangre en el rostro.", "laugh.wav", "center")
         ]
-        negar, _ = chain_lines(negar_lines)
-        negar.ending = True
+        negar, end_negar = chain_lines(negar_lines, ending=False)
 
         recordar_lines = [
             ("Imágenes dolorosas revientan en tu mente.", "memory1.wav", "front"),
             ("Una mano sosteniendo un cuchillo… tu propia mano.", "knife.wav", "left"),
             ("Los gritos de tus padres resuenan como un eco lejano.", "scream.wav", "back"),
-            ("El calor de la sangre en tus dedos te quiebra.", "blood.wav", "center"),
-            ("Comprendes con horror: tú mismo los mataste.", "truth.wav", "front")
+            ("El calor de la sangre en tus dedos te quiebra.", "blood.wav", "center")
         ]
-        recordar, _ = chain_lines(recordar_lines)
-        recordar.ending = True
+        recordar, end_recordar = chain_lines(recordar_lines, ending=False)
+
+        # Final único "TÚ"
+        self_final_lines = [
+            ("Comprendes con horror la verdad innegable: tú mismo los mataste.", "truth.wav", "front")
+        ]
+        self_final, _ = chain_lines(self_final_lines, ending=True)
+
+        # Convergencia a final "TÚ"
+        end_negar.choices = {"Aceptar la verdad": self_final}
+        end_recordar.choices = {"Asumir la culpa": self_final}
 
         final_osc.choices = {
             "Negarlo y seguir": negar,
             "Recordar lo que pasó": recordar
         }
 
-        # --- RUTA B: PASADIZO ---
+        # --- RUTA B: PASADIZO (no final; deriva a TÚ o MADRE) ---
         estatuas_lines = [
             ("Te acercas a una estatua agrietada.", "statue.wav", "front"),
             ("Lees con esfuerzo la inscripción: 'Ella lo ocultó todo'.", "engraving.wav", "left"),
             ("Dentro de una grieta descubres un collar dorado.", "collar.wav", "center"),
             ("Lo reconoces al instante: pertenecía a tu madre.", "gasp.wav", "back")
         ]
-        estatuas, _ = chain_lines(estatuas_lines)
+        estatuas, end_estatuas = chain_lines(estatuas_lines, ending=False)
 
         tunel_lines = [
             ("Sigues un túnel lateral donde un llanto femenino retumba.", "cry1.wav", "front"),
@@ -143,28 +153,51 @@ class Story:
             "Seguir un túnel lateral": tunel
         }
 
-        # --- SUBRAMA B2: MADRE ---
+        # --- SUBRAMA B2: MADRE → convergen al FINAL 'MADRE' ---
         acercarte_lines = [
             ("Te aproximas temblando.", "step.wav", "front"),
             ("Ella toma tu mano con desesperación.", "grip.wav", "left"),
-            ("'Hijo… fui yo quien hizo esto… perdóname'.", "confession.wav", "back"),
-            ("Su voz se quiebra, y sientes que la verdad te destruye.", "cry2.wav", "center")
+            ("'Hijo… fui yo quien hizo esto… perdóname'.", "confession.wav", "back")
         ]
-        acercarte, _ = chain_lines(acercarte_lines)
-        acercarte.ending = True
+        acercarte, end_acercarte = chain_lines(acercarte_lines, ending=False)
 
         escuchar_lines = [
             ("Permanece oculto en las sombras mientras ella solloza.", "sob.wav", "front"),
             ("En el suelo encuentras una carta arrugada.", "paper.wav", "left"),
-            ("La lees: 'No tuve elección… yo fui quien acabó con todo'.", "letter.wav", "back"),
-            ("Tus manos tiemblan mientras aceptas la verdad.", "fear.wav", "center")
+            ("La lees: 'No tuve elección… yo fui quien acabó con todo'.", "letter.wav", "back")
         ]
-        escuchar, _ = chain_lines(escuchar_lines)
-        escuchar.ending = True
+        escuchar, end_escuchar = chain_lines(escuchar_lines, ending=False)
+
+        # Final único "MADRE"
+        mother_final_lines = [
+            ("Sientes el peso de su confesión: fue tu madre quien los mató.", "cry2.wav", "center")
+        ]
+        mother_final, _ = chain_lines(mother_final_lines, ending=True)
+
+        # Convergencia a final "MADRE"
+        end_acercarte.choices = {"Abrazarla y perdonarla": mother_final}
+        end_escuchar.choices = {"Aceptar lo leído": mother_final}
 
         final_tunel.choices = {
             "Acercarte a tu madre": acercarte,
             "Escuchar en silencio": escuchar
+        }
+
+        # --- Convergencias desde rutas no finales ---
+        # Desde LUZ (esconderse / enfrentar) puedes ir hacia sombras (TÚ) o llanto (MADRE)
+        end_esconderse.choices = {
+            "Seguir las sombras": oscuridad,
+            "Seguir el llanto": tunel
+        }
+        end_enfrentar.choices = {
+            "Seguir las sombras": oscuridad,
+            "Seguir el llanto": tunel
+        }
+
+        # Desde ESTATUAS te llevo a decidir hacia cuál gran final ir
+        end_estatuas.choices = {
+            "Seguir el llanto": tunel,
+            "Regresar a la oscuridad": oscuridad
         }
 
         # Estado inicial

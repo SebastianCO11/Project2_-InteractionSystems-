@@ -1,4 +1,3 @@
-# src/sound_manager.py
 from openal import oalOpen, Listener
 import threading
 
