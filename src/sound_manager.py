@@ -93,7 +93,7 @@ class SoundManager:
                 # volumen efectivo del sfx
                 eff = self.sfx_gain if gain is None else max(0.0, min(1.0, gain))
                 snd.play()
-                snd.set_gain(eff * self.master_gain)            # 👈 aplica después de play
+                snd.set_gain(eff * self.master_gain)            # aplica después de play
 
                 self.current_sfx = snd
             except Exception as e:
