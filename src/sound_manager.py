@@ -1,6 +1,7 @@
 from openal import oalOpen, Listener
 import threading
 
+
 class SoundManager:
     def __init__(self):
         # Listener (por si luego quieres mover orientación/posición)
@@ -10,8 +11,8 @@ class SoundManager:
 
         # Volúmenes por tipo
         self.master_gain = 1.0
-        self.bg_gain = 0.2      # volumen por defecto del ambiente
-        self.sfx_gain = 3.0     # volumen por defecto de efectos
+        self.bg_gain = 0.2  # volumen por defecto del ambiente
+        self.sfx_gain = 3.0  # volumen por defecto de efectos
 
         # Referencias a sonidos activos
         self.background = None
@@ -30,7 +31,7 @@ class SoundManager:
     def set_background_volume(self, gain: float):
         """0.0–1.0 (solo ambiente)"""
         self.bg_gain = max(0.0, min(1.0, gain))
-        if self.background:                      # 🔥 aplica en caliente
+        if self.background:  # 🔥 aplica en caliente
             self.background.set_gain(self.bg_gain * self.master_gain)
 
     def set_sfx_volume(self, gain: float):
@@ -42,6 +43,7 @@ class SoundManager:
     # ---------- reproducción ----------
     def play_background(self, filename, loop=True, gain=None):
         """Música de fondo (se reemplaza si ya había una)"""
+
         def _bg():
             try:
                 # si hay uno sonando, lo paramos
@@ -57,7 +59,9 @@ class SoundManager:
                 if gain is not None:
                     self.bg_gain = max(0.0, min(1.0, gain))
                 snd.play()
-                snd.set_gain(self.bg_gain * self.master_gain)   # 👈 aplica después de play
+                snd.set_gain(
+                    self.bg_gain * self.master_gain
+                )  # 👈 aplica después de play
                 self.background = snd
             except Exception as e:
                 print(f"[Error en música de fondo {filename}] {e}")
@@ -71,6 +75,7 @@ class SoundManager:
 
     def play(self, filename, position="center", gain=None, exclusive=True):
         """Efecto puntual. exclusive=True corta el anterior."""
+
         def _play():
             try:
                 if exclusive and self.current_sfx:
@@ -93,7 +98,7 @@ class SoundManager:
                 # volumen efectivo del sfx
                 eff = self.sfx_gain if gain is None else max(0.0, min(1.0, gain))
                 snd.play()
-                snd.set_gain(eff * self.master_gain)            # aplica después de play
+                snd.set_gain(eff * self.master_gain)  # aplica después de play
 
                 self.current_sfx = snd
             except Exception as e:

@@ -5,7 +5,7 @@ from src.sound_manager import SoundManager
 
 
 def limpiar_consola():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def cuadro_texto(lineas):
@@ -57,7 +57,9 @@ class Game:
 
             if self.debug:
                 choices_list = list(node.choices.keys())
-                print(f"[DEBUG] node id={id(node)} ending={node.ending} choices={choices_list}")
+                print(
+                    f"[DEBUG] node id={id(node)} ending={node.ending} choices={choices_list}"
+                )
 
             # Texto del nodo
             cuadro_texto([node.text])
