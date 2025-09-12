@@ -8,11 +8,6 @@ class StoryNode:
 
 
 def chain_lines(lines, ending=False):
-    """
-    lines = [(texto, sonido, posicion), ...]
-    Devuelve (first, last) encadenando con 'Continuar'.
-    Si ending=True, el último nodo se marca final y NO agrega 'Continuar'.
-    """
     first = current = StoryNode(*lines[0])
     for line in lines[1:]:
         nxt = StoryNode(*line)
@@ -30,7 +25,7 @@ class Story:
     def __init__(self):
         self.history = []
 
-        # --- INTRO ---
+    # --- INTRO ---
         intro_lines = [
             (
                 "Despiertas frente a un laberinto colosal cubierto de enredaderas y musgo; el cielo gris parece a punto de desplomarse.",
@@ -55,7 +50,7 @@ class Story:
         ]
         intro, final_intro = chain_lines(intro_lines)
 
-        # --- OPCIONES DE ENTRADA ---
+    # --- ENTRY OPTIONS ---
         puerta_lines = [
             (
                 "Empujas la puerta de hierro; cruje como si nadie la hubiera abierto en siglos.",
@@ -109,7 +104,7 @@ class Story:
             "Buscar otra entrada secreta": pasadizo,
         }
 
-        # --- RUTA A: PUERTA PRINCIPAL ---
+    # --- ROUTE A: MAIN DOOR ---
         luz_lines = [
             (
                 "Avanzas hacia la luz parpadeante; cada paso hace crujir el suelo de madera podrida.",
@@ -163,7 +158,7 @@ class Story:
             "Adentrarte en la oscuridad profunda": oscuridad,
         }
 
-        # --- SUBRAMA A1: LUZ ---
+    # --- SUB-BRANCH A1: LIGHT ---
         esconderse_lines = [
             (
                 "Te ocultas tras una columna cubierta de líquenes; apenas respiras.",
@@ -220,7 +215,7 @@ class Story:
             "Enfrentar la presencia": enfrentar,
         }
 
-        # --- SUBRAMA A2: OSCURIDAD ---
+    # --- SUB-BRANCH A2: DARKNESS ---
         negar_lines = [
             (
                 "Encuentras un espejo roto apoyado en la pared; apenas refleja tu silueta.",
@@ -269,7 +264,7 @@ class Story:
             "Recordar lo que pasó": recordar,
         }
 
-        # --- RUTA B: PASADIZO ---
+    # --- ROUTE B: PASSAGE ---
         estatuas_lines = [
             (
                 "Te acercas a una estatua agrietada; sus ojos parecen moverse.",
@@ -319,7 +314,7 @@ class Story:
             "Seguir un túnel lateral": tunel,
         }
 
-        # --- SUBRAMA B2: MADRE ---
+    # --- SUB-BRANCH B2: MOTHER ---
         acercarte_lines = [
             (
                 "Te aproximas temblando; ella levanta el rostro bañado en lágrimas.",
@@ -362,7 +357,7 @@ class Story:
             "Escuchar en silencio": escuchar,
         }
 
-        # --- NUEVAS RUTAS Y FINALES ---
+    # --- NEW ROUTES AND ENDINGS ---
         guardian_lines = [
             (
                 "El suelo tiembla; del techo cae polvo mientras una figura gigantesca emerge.",
@@ -430,7 +425,7 @@ class Story:
         ]
         escape, _ = chain_lines(escape_lines, ending=True)
 
-        # --- CONEXIONES EXTRA ---
+    # --- EXTRA CONNECTIONS ---
         end_esconderse.choices = {
             "Seguir las sombras": oscuridad,
             "Seguir el llanto": tunel,
@@ -450,17 +445,14 @@ class Story:
         self._intro = intro
         self.current = intro
 
-    # --- Métodos de interacción ---
+    # --- Interaction Methods ---
     def get_current(self):
-        """Devuelve el nodo actual."""
         return self.current
 
     def get_choices(self):
-        """Devuelve las opciones disponibles del nodo actual como lista de strings."""
         return list(self.current.choices.keys())
 
     def choose(self, option):
-        """Avanza a la opción indicada si existe y registra la decisión en el historial."""
         if option in self.current.choices:
             self.history.append((self.current.text, option))
             self.current = self.current.choices[option]
@@ -468,16 +460,13 @@ class Story:
         return False
 
     def is_finished(self):
-        """Indica si el nodo actual es final."""
         return self.current.ending
 
     def restart(self):
-        """Reinicia la historia al estado inicial y limpia el historial."""
         self.current = self._intro
         self.history = []
 
     def get_path(self):
-        """Devuelve un resumen textual del camino recorrido."""
         lines = ["CAMINO RECORRIDO\n"]
         for i, (text, choice) in enumerate(self.history, 1):
             lines.append(f"{i}. {text}\n   Elegiste: {choice}\n")

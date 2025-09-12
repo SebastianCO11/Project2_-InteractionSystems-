@@ -21,7 +21,7 @@ Our approach focused on creating a suspense story where the protagonist must dis
 ## Technical Implementation
 
 ### Technologies Used
-- **Programming Language**: [Specify: Python/C/C++/Java]
+- **Programming Language**: [Specify: Python]
 - **Audio Library**: OpenAL for 3D spatial audio processing
 - **Architecture**: Object-Oriented Programming principles
 
@@ -36,6 +36,34 @@ The game implements spatial audio where:
 - **Total Lines**: 50+ lines of narrative text
 - **Complete Story Arc**: Beginning → Investigation → Discovery → Resolution
 - **Interactive Elements**: Player can progress through the story at their own pace
+
+## Installation & Setup
+
+### 1. Create and activate the virtual environment
+
+On Windows, run the following command in the project folder:
+
+```
+setup_env.bat
+```
+
+This will create a virtual environment, activate it, and install all required dependencies from `requirements.txt`.
+
+If you want to activate the environment later, use:
+
+```
+call venv\Scripts\activate
+```
+
+### 2. Run the game
+
+Once the environment is activated, start the game with:
+
+```
+python main.py
+```
+
+The game runs in the console and uses spatial audio. Make sure your sound output is configured correctly for the best experience.
 
 ## Audio Resources
 All audio resources used in this project were extracted from YouTube and have been edited to fit the game's requirements. The sounds include ambient effects, music, and sound effects that enhance the suspense atmosphere of the story.

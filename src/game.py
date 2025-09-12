@@ -1,37 +1,29 @@
-# src/game.py
 import os
 from src.story import Story
 from src.sound_manager import SoundManager
 
 
-def limpiar_consola():
+def clear_console():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def cuadro_texto(lineas):
-    """
-    Recibe una lista de strings y los imprime dentro de un cuadro ASCII.
-    """
-    ancho = max(len(linea) for linea in lineas) + 2  # padding interno
-    print("╔" + "═" * ancho + "╗")
-    for linea in lineas:
-        print(f"║ {linea.ljust(ancho - 1)}║")
-    print("╚" + "═" * ancho + "╝")
+def print_text_box(lines):
+    width = max(len(line) for line in lines) + 2
+    print("╔" + "═" * width + "╗")
+    for line in lines:
+        print(f"║ {line.ljust(width - 1)}║")
+    print("╚" + "═" * width + "╝")
 
 
-def pantalla_inicio():
-    limpiar_consola()
-    ascii_title = r"""
-██       ▄   ▄███▄      ▄     ▄▄▄▄▀ ▄   █▄▄▄▄ ██       ▄███▄      ▄       ▄███▄   █         █    ██   ███   ▄███▄   █▄▄▄▄ ▄█    ▄     ▄▄▄▄▀ ████▄     
-█ █       █  █▀   ▀      █ ▀▀▀ █     █  █  ▄▀ █ █      █▀   ▀      █      █▀   ▀  █         █    █ █  █  █  █▀   ▀  █  ▄▀ ██     █ ▀▀▀ █    █   █     
-█▄▄█ █     █ ██▄▄    ██   █    █  █   █ █▀▀▌  █▄▄█     ██▄▄    ██   █     ██▄▄    █         █    █▄▄█ █ ▀ ▄ ██▄▄    █▀▀▌  ██ ██   █    █    █   █     
-█  █  █    █ █▄   ▄▀ █ █  █   █   █   █ █  █  █  █     █▄   ▄▀ █ █  █     █▄   ▄▀ ███▄      ███▄ █  █ █  ▄▀ █▄   ▄▀ █  █  ▐█ █ █  █   █     ▀████     
-   █   █  █  ▀███▀   █  █ █  ▀    █▄ ▄█   █      █     ▀███▀   █  █ █     ▀███▀       ▀         ▀   █ ███   ▀███▀     █    ▐ █  █ █  ▀                
-  █     █▐           █   ██        ▀▀▀   ▀      █              █   ██                              █                 ▀       █   ██                   
- ▀      ▐                                      ▀                                                  ▀                                                                                                                                       
-"""
-    print(ascii_title)
-    print("Presiona ENTER para iniciar")
+def show_start_screen():
+    clear_console()
+    try:
+        with open("resources/ascii_title.txt", "r", encoding="utf-8") as f:
+            ascii_title = f.read()
+        print(ascii_title)
+    except Exception:
+        print("[TITLE ART MISSING]")
+    print("Press ENTER to start")
     input()
 
 
@@ -44,27 +36,24 @@ class Game:
 
     def start(self):
         try:
-            self.sound_manager.play_background("ambient.wav", loop=True, gain=0.3)
-            pantalla_inicio()
-            print("Tu objetivo es descubrir quién mató a tus padres...\n")
+            self.sound_manager.listener.set_orientation((0, 0, 1, 0, 1, 0))
+            self.sound_manager.play_background("ambient.wav", loop=True, volume=0.3)
+            show_start_screen()
+            print("Your goal is to discover who killed your parents...\n")
         except Exception:
             pass
 
         while True:
             node = self.story.get_current()
 
-            limpiar_consola()  # Limpia pantalla antes de mostrar
+            clear_console()
 
             if self.debug:
                 choices_list = list(node.choices.keys())
-                print(
-                    f"[DEBUG] node id={id(node)} ending={node.ending} choices={choices_list}"
-                )
+                print(f"[DEBUG] node id={id(node)} ending={node.ending} choices={choices_list}")
 
-            # Texto del nodo
-            cuadro_texto([node.text])
+            print_text_box([node.text])
 
-            # Sonido
             if node.sound:
                 try:
                     self.sound_manager.play(node.sound, node.position)
@@ -72,11 +61,11 @@ class Game:
                     pass
 
             if node.ending:
-                print("\n=== Fin de la historia ===")
+                print("\n=== End of story ===")
                 break
 
             if node.choices and len(node.choices) == 1 and "Continuar" in node.choices:
-                input("\nPresiona Enter para continuar...\n")
+                input("\nPress Enter to continue...\n")
                 moved = self.story.choose("Continuar")
                 if not moved:
                     target = list(node.choices.values())[0]
@@ -84,19 +73,19 @@ class Game:
                 continue
 
             if node.choices:
-                opciones = list(node.choices.keys())
-                cuadro_texto([f"{i+1}) {op}" for i, op in enumerate(opciones)])
+                options = list(node.choices.keys())
+                print_text_box([f"{i+1}) {op}" for i, op in enumerate(options)])
 
                 while True:
-                    choice = input("\nElige una opción: ").strip()
+                    choice = input("\nChoose an option: ").strip()
                     if not choice.isdigit():
-                        print("Por favor escribe el número de la opción.")
+                        print("Please enter the option number.")
                         continue
                     idx = int(choice) - 1
-                    if idx < 0 or idx >= len(opciones):
-                        print("Número fuera de rango. Intenta de nuevo.")
+                    if idx < 0 or idx >= len(options):
+                        print("Number out of range. Try again.")
                         continue
-                    picked = opciones[idx]
+                    picked = options[idx]
                     break
 
                 moved = self.story.choose(picked)
@@ -105,12 +94,12 @@ class Game:
                         target = node.choices[picked]
                         self.story.current = target
                     except Exception as e:
-                        print("[ERROR] No fue posible avanzar:", e)
+                        print(f"[ERROR] Could not advance: {e}")
                         break
                 continue
 
-            print("\n(No hay opciones; fin implícito.)")
-            print("\n=== Fin de la historia ===")
+            print("\n(No options; implicit end.)")
+            print("\n=== End of story ===")
             break
 
         try:
