@@ -11,6 +11,10 @@ This project is a text-based adventure game inspired by classic interactive fict
 ### Story Overview
 Our approach focused on creating a suspense story where the protagonist must discover who murdered their parents. The player navigates through different locations, gathering clues and interacting with the environment to solve the mystery. The narrative follows a complete story structure with beginning, development, climax, and resolution.
 
+### Video
+[📂 Preview video in SharePoint](https://javerianacaliedu-my.sharepoint.com/:v:/g/personal/sebastianco11_javerianacali_edu_co/EYeiaM5VKZdPuo4sOMH6DA0BSQHDMmFbXq9EOPLQG3WmaQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=GZBuLE)
+
+
 ### Key Features
 - **3D Spatial Audio**: Sounds are positioned in 3D space according to the story events (left, right, behind, distant, etc.)
 - **Interactive Storyline**: Players can progress through the story line by line using command-line interface
