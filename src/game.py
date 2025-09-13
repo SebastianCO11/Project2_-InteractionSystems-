@@ -23,7 +23,7 @@ def show_start_screen():
         print(ascii_title)
     except Exception:
         print("[TITLE ART MISSING]")
-    print("Press ENTER to start")
+    print("Presiona ENTER para iniciar")
     input()
 
 
@@ -65,7 +65,7 @@ class Game:
                 break
 
             if node.choices and len(node.choices) == 1 and "Continuar" in node.choices:
-                input("\nPress Enter to continue...\n")
+                input("Presiona Enter para continuar...\n")
                 moved = self.story.choose("Continuar")
                 if not moved:
                     target = list(node.choices.values())[0]
@@ -79,7 +79,7 @@ class Game:
                 while True:
                     choice = input("\nChoose an option: ").strip()
                     if not choice.isdigit():
-                        print("Please enter the option number.")
+                        print("Por favor selecciona una opción.")
                         continue
                     idx = int(choice) - 1
                     if idx < 0 or idx >= len(options):

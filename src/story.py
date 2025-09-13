@@ -25,7 +25,7 @@ class Story:
     def __init__(self):
         self.history = []
 
-    # --- INTRO ---
+        # --- INTRO ---
         intro_lines = [
             (
                 "Despiertas frente a un laberinto colosal cubierto de enredaderas y musgo; el cielo gris parece a punto de desplomarse.",
@@ -50,7 +50,7 @@ class Story:
         ]
         intro, final_intro = chain_lines(intro_lines)
 
-    # --- ENTRY OPTIONS ---
+        # --- ENTRY OPTIONS ---
         puerta_lines = [
             (
                 "Empujas la puerta de hierro; cruje como si nadie la hubiera abierto en siglos.",
@@ -104,7 +104,7 @@ class Story:
             "Buscar otra entrada secreta": pasadizo,
         }
 
-    # --- ROUTE A: MAIN DOOR ---
+        # --- ROUTE A: MAIN DOOR ---
         luz_lines = [
             (
                 "Avanzas hacia la luz parpadeante; cada paso hace crujir el suelo de madera podrida.",
@@ -158,7 +158,7 @@ class Story:
             "Adentrarte en la oscuridad profunda": oscuridad,
         }
 
-    # --- SUB-BRANCH A1: LIGHT ---
+        # --- SUB-BRANCH A1: LIGHT ---
         esconderse_lines = [
             (
                 "Te ocultas tras una columna cubierta de líquenes; apenas respiras.",
@@ -215,7 +215,7 @@ class Story:
             "Enfrentar la presencia": enfrentar,
         }
 
-    # --- SUB-BRANCH A2: DARKNESS ---
+        # --- SUB-BRANCH A2: DARKNESS ---
         negar_lines = [
             (
                 "Encuentras un espejo roto apoyado en la pared; apenas refleja tu silueta.",
@@ -256,6 +256,7 @@ class Story:
         ]
         self_final, _ = chain_lines(self_final_lines, ending=True)
 
+        # conectar negación/recuerdo a final definitivo
         end_negar.choices = {"Aceptar la verdad": self_final}
         end_recordar.choices = {"Asumir la culpa": self_final}
 
@@ -264,7 +265,7 @@ class Story:
             "Recordar lo que pasó": recordar,
         }
 
-    # --- ROUTE B: PASSAGE ---
+        # --- ROUTE B: PASSAGE ---
         estatuas_lines = [
             (
                 "Te acercas a una estatua agrietada; sus ojos parecen moverse.",
@@ -314,7 +315,7 @@ class Story:
             "Seguir un túnel lateral": tunel,
         }
 
-    # --- SUB-BRANCH B2: MOTHER ---
+        # --- SUB-BRANCH B2: MOTHER ---
         acercarte_lines = [
             (
                 "Te aproximas temblando; ella levanta el rostro bañado en lágrimas.",
@@ -349,6 +350,7 @@ class Story:
         ]
         mother_final, _ = chain_lines(mother_final_lines, ending=True)
 
+        # conectar acercarte/escuchar a final definitivo
         end_acercarte.choices = {"Abrazarla y perdonarla": mother_final}
         end_escuchar.choices = {"Aceptar lo leído": mother_final}
 
@@ -357,7 +359,7 @@ class Story:
             "Escuchar en silencio": escuchar,
         }
 
-    # --- NEW ROUTES AND ENDINGS ---
+        # --- NEW ROUTES AND ENDINGS ---
         guardian_lines = [
             (
                 "El suelo tiembla; del techo cae polvo mientras una figura gigantesca emerge.",
@@ -386,6 +388,7 @@ class Story:
         ]
         guardian_final, _ = chain_lines(guardian_final_lines, ending=True)
 
+        # conectar end_guardian a final definitivo
         end_guardian.choices = {"Aceptar tu destino": guardian_final}
 
         father_lines = [
@@ -411,6 +414,9 @@ class Story:
         ]
         father_final, _ = chain_lines(father_final_lines, ending=True)
 
+        # conectar end_father a final definitivo
+        end_father.choices = {"Aceptar la verdad": father_final}
+
         escape_lines = [
             (
                 "Corres sin mirar atrás, atravesando puertas y pasadizos.",
@@ -425,7 +431,7 @@ class Story:
         ]
         escape, _ = chain_lines(escape_lines, ending=True)
 
-    # --- EXTRA CONNECTIONS ---
+        # --- EXTRA CONNECTIONS ---
         end_esconderse.choices = {
             "Seguir las sombras": oscuridad,
             "Seguir el llanto": tunel,
