@@ -44,7 +44,7 @@ The game implements spatial audio where:
 On Windows, run the following command in the project folder:
 
 ```
-setup_env.bat
+.\setup_env.bat
 ```
 
 This will create a virtual environment, activate it, and install all required dependencies from `requirements.txt`.
